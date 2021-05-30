@@ -14,7 +14,6 @@ from sklearn.metrics import classification_report, roc_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
-import array
 
 
 
@@ -40,18 +39,6 @@ def matriz_confusion_auc(model, x_test, y_test, y_pred):
     return matriz_confusion, AUC, fpr, tpr
 
 
-def show_roc_curve_matrix(fpr, tpr, matriz_confusion):
-    sns.heatmap(matriz_confusion)
-    plt.show()
-    plt.plot(fpr, tpr, color='orange', label='ROC')
-    plt.plot([0, 1], [0, 1], color='darkblue', linestyle='--')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curve')
-    plt.legend()
-    plt.show()
-
-
 def show_metrics(str_model, AUC, acc_validation, acc_test, y_test, y_pred):
     print('-' * 50 + '\n')
     print(str.upper(str_model))
@@ -59,7 +46,6 @@ def show_metrics(str_model, AUC, acc_validation, acc_test, y_test, y_pred):
     print(f'Accuracy de validación: {acc_validation} ')
     print(f'Accuracy de test: {acc_test} ')
     print(classification_report(y_test, y_pred))
-    print(f'AUC: {AUC} ')
 
 url = 'bank-full.csv'
 data = pd.read_csv(url)
@@ -82,8 +68,8 @@ data.dropna(axis=0, how='any', inplace=True)
 #x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 
 
-data_train = data[:850]
-data_test = data[850:]
+data_train = data[:550]
+data_test = data[550:]
 
 # X y Y de la primera parte de dataset
 x = np.array(data_train.drop(['housing'], 1))
@@ -119,6 +105,7 @@ y_pred = svc.predict(x_test_out);
 print(f'Accuracy de Validación: {accuracy_score(y_pred, y_test_out)}')
 print('Matriz de confusión')
 matriz_confusion_svc = confusion_matrix(y_test_out, y_pred)
+sns.heatmap(matriz_confusion_svc)
 print(confusion_matrix(y_test_out, y_pred))
 probs = svc.predict_proba(x_test)
 probs = probs[:, 1]
@@ -153,6 +140,8 @@ y_pred = logreg.predict(x_test_out);
 print(f'Accuracy de Validación: {accuracy_score(y_pred, y_test_out)}')
 print('Matriz de confusión')
 matriz_confusion_logreg = confusion_matrix(y_test_out, y_pred)
+sns.heatmap(matriz_confusion_logreg)
+
 print(confusion_matrix(y_test_out, y_pred))
 probs = logreg.predict_proba(x_test)
 probs = probs[:, 1]
@@ -187,6 +176,8 @@ y_pred = knn.predict(x_test_out);
 print(f'Accuracy de Validación: {accuracy_score(y_pred, y_test_out)}')
 print('Matriz de confusión')
 matriz_confusion_knn = confusion_matrix(y_test_out, y_pred)
+sns.heatmap(matriz_confusion_knn)
+
 print(confusion_matrix(y_test_out, y_pred))
 probs = knn.predict_proba(x_test)
 probs = probs[:, 1]
@@ -220,13 +211,14 @@ y_pred = dtc.predict(x_test_out);
 print(f'Accuracy de Validación: {accuracy_score(y_pred, y_test_out)}')
 print('Matriz de confusión')
 matriz_confusion_dct = confusion_matrix(y_test_out, y_pred)
+sns.heatmap(matriz_confusion_dct)
+plt.show()
 print(confusion_matrix(y_test_out, y_pred))
 probs = dtc.predict_proba(x_test)
 probs = probs[:, 1]
 fpr4, tpr4, _ = roc_curve(y_test, probs)
 AUC = roc_auc_score(y_test, probs)
 print(f'AUC: {AUC}')
-#show_roc_curve_matrix(fpr, tpr, matriz_confusion_dct)
 print('*'* 50)
 arrFpr = np.array([fpr4,fpr1, fpr2, fpr3])
 arrFpt = np.array([tpr4,tpr1,tpr2,tpr3])
@@ -239,3 +231,6 @@ plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic (ROC) Curve')
 plt.legend()
 plt.show()
+
+#Tuve problemas
+#show_metrics('Decision Tree',AUC, accuracy_score(y_pred, y_test_out),dtc.score(x_test, y_test) , y_test, y_pred)
